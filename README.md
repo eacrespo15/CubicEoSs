@@ -4,8 +4,8 @@
 
 ## About the author:
 
-Emanuel A. Crespo
-PhD in Chemical Engineering: 2017-2021
+Emanuel A. Crespo\
+PhD in Chemical Engineering: 2017-2021\
 University of Aveiro/CICECO Aveiro Institute of Materials
 
 ## Introduction:
