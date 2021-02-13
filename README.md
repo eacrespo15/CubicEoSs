@@ -12,9 +12,9 @@ University of Aveiro/CICECO Aveiro Institute of Materials
 
 This repository contains an implementation of the Peng-Robinson (PR) and Soave-Redlich-Kwong (SRK) cubic equations of state. It is based on the recommendations provided in Michelsen & Mollerups's book that I recommend to anyone interested in the efficient implementation of thermodynamic models.
 
-**Thermodynamic Models: Fundamentals and Computational Aspects**
-Author(s) : Michael L. Michelsen & Jorgen Mollerup.
-ISBN : 87-989961-3-4
+**Thermodynamic Models: Fundamentals and Computational Aspects**\
+Author(s) : Michael L. Michelsen & Jorgen Mollerup.\
+ISBN : 87-989961-3-4\
 Second edition 2007, 2nd printing 2018, Tie-Line Publications
 
 ## Examples:
@@ -89,7 +89,7 @@ Core routine for the calculations using the PR & SRK EoSs.
 
 ### Documentation folder:
 
-In this folder further documentation for each routine is provided as long as cross-reference information and dependency graphs. This documentation was generated using the amazing `m2html` toolbox that can be found [here](https://www.artefact.tk/software/matlab/m2html/tutorial.php).
+In this folder further documentation for each routine is provided as long as cross-reference information and dependency graphs. This documentation was generated using the amazing `m2html` toolbox that can be found [here](https://www.artefact.tk/software/matlab/m2html/tutorial.php). The best way to check out this documentation is to download the documentation folder to your computer and open the index.html file in your browser!
 
 ## Code Dependency Graph:
 
