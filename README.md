@@ -1,5 +1,3 @@
-# README
-
 # Cubic EoSs -  MATLAB implementation
 
 ## About the author:
