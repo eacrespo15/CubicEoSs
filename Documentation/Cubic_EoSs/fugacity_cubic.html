@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fugacity_cubic</title>
+  <meta name="keywords" content="fugacity_cubic">
+  <meta name="description" content="Emanuel A. Crespo">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>fugacity_cubic
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Emanuel A. Crespo</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [fug,rho] = fugacity_cubic(NC,T,P,zfeed,phasetype,solvertype,INITDATA) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+This routine is just to make more explicit how to call the cubic EoSs to
+calculate fugacity coefficients.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="cubic_eos.html" class="code" title="function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc)">cubic_eos</a>	Core function for the calculations using cEoSs</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [fug,rho] = fugacity_cubic(NC,T,P,zfeed,phasetype,solvertype,INITDATA)</a>
+0002 <span class="comment">%Emanuel A. Crespo</span>
+0003 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0004 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%Code last revised in: February 2021</span>
+0007 <span class="comment">%This routine is just to make more explicit how to call the cubic EoSs to</span>
+0008 <span class="comment">%calculate fugacity coefficients.</span>
+0009 [~,Z,fug,~,~,~,~] = <a href="cubic_eos.html" class="code" title="function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc)">cubic_eos</a>(NC,T,P,zfeed,phasetype,solvertype,INITDATA.SQTC,INITDATA.kij,INITDATA.delta1,INITDATA.delta2,INITDATA.bci,INITDATA.aci,INITDATA.mfunc);
+0010 PINV=1/P;
+0011 V=Z*T*PINV; <span class="comment">%This is V/R</span>
+0012 rho=(1/V)/1000; <span class="comment">%Density in mol/L?</span>
+0013 <span class="keyword">end</span>
+0014</pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

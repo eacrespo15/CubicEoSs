@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of get_eos_constants</title>
+  <meta name="keywords" content="get_eos_constants">
+  <meta name="description" content="This subroutines calculates omegaB and sqrt(omegaA) that are used">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>get_eos_constants
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This subroutines calculates omegaB and sqrt(omegaA) that are used</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [delta1,delta2,CA,CB] = get_eos_constants(c) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This subroutines calculates omegaB and sqrt(omegaA) that are used
+to calculate the ac and bc constants of the SRK/PR EoSs
+
+Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+
+Reference: M. L. Michelsen and J.M. Mollerup Thermodynamic Models:
+Fundamental Aspects and Computational Aspects Cap.3
+
+Notes:
+c=0 yields the Redlich-Kwong EoS
+c=1 yields the Peng-Robinson EoS</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="init_cubic.html" class="code" title="function [SQTC,kij,delta1,delta2,bci,aci,mfunc] = init_cubic(NC,EQT,INDEX)">init_cubic</a>	Initialization routine for the Cubic EoSs</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [delta1,delta2,CA,CB] = get_eos_constants(c)</a>
+0002 <span class="comment">%This subroutines calculates omegaB and sqrt(omegaA) that are used</span>
+0003 <span class="comment">%to calculate the ac and bc constants of the SRK/PR EoSs</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%Emanuel A. Crespo</span>
+0006 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0007 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%Code last revised in: February 2021</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%Reference: M. L. Michelsen and J.M. Mollerup Thermodynamic Models:</span>
+0012 <span class="comment">%Fundamental Aspects and Computational Aspects Cap.3</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%Notes:</span>
+0015 <span class="comment">%c=0 yields the Redlich-Kwong EoS</span>
+0016 <span class="comment">%c=1 yields the Peng-Robinson EoS</span>
+0017 
+0018 <span class="comment">%Calculation of delta 1 and delta 2</span>
+0019 delta1=0.5*(c+1+sqrt((c+1)*(c+1)+4*c)); <span class="comment">%Eq.10 pag.75</span>
+0020 delta2=-c/delta1;                       <span class="comment">%Eq. 9 pag.75</span>
+0021 d1=1+c;                                 <span class="comment">%d1=delta1+delta2=1+c</span>
+0022 d2=-c;                                  <span class="comment">%d2=delta1*delta2=-c</span>
+0023 
+0024 dummy1=power(1+delta1,1/3);
+0025 dummy2=power(1+delta2,1/3);
+0026 y=1+dummy1*dummy2*(dummy1+dummy2);      <span class="comment">%Eqs. 16-18</span>
+0027 
+0028 dummy3=(3*y*(y+d1)+d1*d1-d2)/(3*y+c);   <span class="comment">% Eq. 20</span>
+0029 
+0030 Zc=y/(3*y+c);                           <span class="comment">%Eq. 19</span>
+0031 
+0032 OMEGAB=Zc/y;                            <span class="comment">%Eq. 19 and Eq.24</span>
+0033 OMEGAA=dummy3*OMEGAB;                   <span class="comment">%Eq. 23</span>
+0034 
+0035 <span class="comment">%For convenience the following variables are output instead of the omega</span>
+0036 <span class="comment">%values</span>
+0037 CA=sqrt(OMEGAA);
+0038 CB=OMEGAB;
+0039 <span class="keyword">end</span>
+0040</pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

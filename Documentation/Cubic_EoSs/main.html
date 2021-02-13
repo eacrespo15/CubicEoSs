@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of main</title>
+  <meta name="keywords" content="main">
+  <meta name="description" content="Main file for calculations with SRK/PR cubic EoSs">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>main
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Main file for calculations with SRK/PR cubic EoSs</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Main file for calculations with SRK/PR cubic EoSs
+
+Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+
+This file provides two examples of how to use the SRK/PR codes</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="cubic_eos.html" class="code" title="function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc)">cubic_eos</a>	Core function for the calculations using cEoSs</li><li><a href="init_cubic.html" class="code" title="function [SQTC,kij,delta1,delta2,bci,aci,mfunc] = init_cubic(NC,EQT,INDEX)">init_cubic</a>	Initialization routine for the Cubic EoSs</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%Main file for calculations with SRK/PR cubic EoSs</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%Emanuel A. Crespo</span>
+0004 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0005 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%Code last revised in: February 2021</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%This file provides two examples of how to use the SRK/PR codes</span>
+0010 
+0011 
+0012 <span class="comment">%% Example 1 -</span>
+0013 Input required <span class="keyword">for</span> calculations using Cubic EoSs
+0014 NC=3;                   <span class="comment">%Number of components</span>
+0015 indexes=[1 14 15];      <span class="comment">%Index of the mixture components in the compounds database (Check get_module_database.m)</span>
+0016 T=240;                  <span class="comment">%Temperature (K)</span>
+0017 P=5;                    <span class="comment">%Pressure (MPa)</span>
+0018 nfeed=[50 10 40];       <span class="comment">%Feed (number of moles in the feed)</span>
+0019 EoS=1;                  <span class="comment">%EoS Model (0)SRK (1)Peng-Robinson</span>
+0020 phasetype=1;            <span class="comment">%Desired root: (1)Liquid (-1)Vapor (0)Minimum Gibbs energy</span>
+0021 solvertype=1;           <span class="comment">%Solver type: (1)Mollerup (2)Mollerups with root sort</span>
+0022 
+0023 <span class="comment">%Convert the Feed into a normalized composition for n=1</span>
+0024 zfeed=nfeed/sum(nfeed);
+0025 <span class="comment">%Read the database and set up the correct cubic EoS</span>
+0026 [SQTC,kij,delta1,delta2,bci,aci,mfunc]=<a href="init_cubic.html" class="code" title="function [SQTC,kij,delta1,delta2,bci,aci,mfunc] = init_cubic(NC,EQT,INDEX)">init_cubic</a>(NC,EoS,indexes);
+0027 <span class="comment">%Carry the calculations</span>
+0028 [phasefound,Z,fug,fugT,fugP,fugX,AUX]=<a href="cubic_eos.html" class="code" title="function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc)">cubic_eos</a>(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc);
+0029 
+0030 <span class="comment">%% Particular notes of the developer</span>
+0031 <span class="comment">% NC=5;</span>
+0032 <span class="comment">% indexes=[1,2,3,14,15];</span>
+0033 <span class="comment">% T=204;</span>
+0034 <span class="comment">% P=4;</span>
+0035 <span class="comment">% z=[0.66 0.03 0.01 0.05 0.25];</span>
+0036 <span class="comment">% EoS=0;</span>
+0037 <span class="comment">% flashphase=0;   %Fugacities are always calculated for the phase with lower G for the trial composition</span>
+0038 <span class="comment">% solver_cubic=1; %Define solver type for cubic EoS</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">% %Read the database</span>
+0041 <span class="comment">% [data]=get_module_database();</span>
+0042 <span class="comment">% %Get the critical properties</span>
+0043 <span class="comment">% Tc=data.TC(indexes);</span>
+0044 <span class="comment">% Pc=data.PC(indexes);</span>
+0045 <span class="comment">% W=data.ACENTRIC(indexes);</span>
+0046 
+0047 <span class="comment">%Read the database and set up the correct cubic EoS</span>
+0048 <span class="comment">% [SQTC,kij,delta1,delta2,bci,aci,mfunc]=init_cubic(NC,EoS,indexes);</span>
+0049 <span class="comment">% INITDATA.SQTC=SQTC;</span>
+0050 <span class="comment">% INITDATA.kij=kij;</span>
+0051 <span class="comment">% INITDATA.delta1=delta1;</span>
+0052 <span class="comment">% INITDATA.delta2=delta2;</span>
+0053 <span class="comment">% INITDATA.bci=bci;</span>
+0054 <span class="comment">% INITDATA.aci=aci;</span>
+0055 <span class="comment">% INITDATA.mfunc=mfunc;</span>
+0056 <span class="comment">%</span>
+0057 <span class="comment">% NF=3;                           %Assumed number of phases</span>
+0058 <span class="comment">% betas_guess=1/NF*ones(NF,1);    %Construct initial vector of beta</span>
+0059 <span class="comment">% %Define initial K-values</span>
+0060 <span class="comment">% K=zeros(1,NC);</span>
+0061 <span class="comment">% for i=1:NC</span>
+0062 <span class="comment">%    K(i)=Pc(i)/P*exp(5.373*(1+W(i))*(1-Tc(i)/T));</span>
+0063 <span class="comment">% end</span>
+0064 
+0065 <span class="comment">%Initialize the fugacities</span>
+0066 <span class="comment">% LK_L1=log(K);</span>
+0067 <span class="comment">% LK_L1(end)=LK_L1(end)+1;</span>
+0068 <span class="comment">% LK_L2=log(K);</span>
+0069 <span class="comment">% LK_L2(1)=LK_L2(1)+1;</span>
+0070 <span class="comment">% FUG_V=ones(1,NC);</span>
+0071 <span class="comment">% FUG_L1=exp(LK_L1);</span>
+0072 <span class="comment">% FUG_L2=exp(LK_L2);</span>
+0073 <span class="comment">% FUGs=[FUG_V;FUG_L1;FUG_L2];</span>
+0074 
+0075 <span class="comment">%Collect initial guess from rachford-rice solver</span>
+0076 <span class="comment">% [Betas,y]=MPh_Rachford_Rice(NF,z,FUGs,betas_guess);</span>
+0077 <span class="comment">% [Betas,y]=MF_Rachford_Rice(NF,z,FUGs,betas_guess);</span>
+0078 
+0079 <span class="comment">%Apply successive substitutuion to solve the problem</span>
+0080 <span class="comment">%[Final_Betas,XPhase,rho_phase,niter,time]=MF_FLASH_MICHELSEN(P,T,z,y,Betas,flashphase,solver_cubic,INITDATA);</span>
+0081 
+0082</pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

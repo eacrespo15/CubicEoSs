@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of get_binary</title>
+  <meta name="keywords" content="get_binary">
+  <meta name="description" content="This function retrives the binary interaction parameters matrix in the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>get_binary
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This function retrives the binary interaction parameters matrix in the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function[parameters] = get_binary(matrix,index,NC) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function retrives the binary interaction parameters matrix in the
+form (1-kij) for the system componentes.
+
+Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+
+Inputs:
+matrix- kij matrix from database
+index-  index of the different components present in the system
+NC- Number of components
+
+Outputs:
+parameters- matrix (NCxNC) containing the 1-kij values for all the systems
+sub-binary systems.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="init_cubic.html" class="code" title="function [SQTC,kij,delta1,delta2,bci,aci,mfunc] = init_cubic(NC,EQT,INDEX)">init_cubic</a>	Initialization routine for the Cubic EoSs</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function[parameters] = get_binary(matrix,index,NC)</a>
+0002 <span class="comment">%This function retrives the binary interaction parameters matrix in the</span>
+0003 <span class="comment">%form (1-kij) for the system componentes.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%Emanuel A. Crespo</span>
+0006 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0007 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%Code last revised in: February 2021</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%Inputs:</span>
+0012 <span class="comment">%matrix- kij matrix from database</span>
+0013 <span class="comment">%index-  index of the different components present in the system</span>
+0014 <span class="comment">%NC- Number of components</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%Outputs:</span>
+0017 <span class="comment">%parameters- matrix (NCxNC) containing the 1-kij values for all the systems</span>
+0018 <span class="comment">%sub-binary systems.</span>
+0019 
+0020 parameters=ones(NC,NC);
+0021 <span class="keyword">for</span> i=1:NC
+0022     <span class="keyword">for</span> j=1:NC
+0023         parameters(i,j)=1-matrix(index(i),index(j));
+0024         parameters(j,i)=parameters(i,j);
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028</pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

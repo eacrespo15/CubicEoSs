@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of get_module_database</title>
+  <meta name="keywords" content="get_module_database">
+  <meta name="description" content="Database file of critical properties and binary interaction parameters">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>get_module_database
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Database file of critical properties and binary interaction parameters</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function[data]=get_module_database() </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Database file of critical properties and binary interaction parameters
+to use with the cEoSs
+
+Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+
+[data] is a structure with the following fields:
+name - a short name for each component
+TC - critical temperature (K)
+PC - critical pressure (MPa)
+ACENTRIC - acentric factor
+binary - Matrix of binary interaction parameters (NCxNC), where NC is the
+number of components in the database</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="init_cubic.html" class="code" title="function [SQTC,kij,delta1,delta2,bci,aci,mfunc] = init_cubic(NC,EQT,INDEX)">init_cubic</a>	Initialization routine for the Cubic EoSs</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function[data]=get_module_database()</a>
+0002 <span class="comment">%Database file of critical properties and binary interaction parameters</span>
+0003 <span class="comment">%to use with the cEoSs</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%Emanuel A. Crespo</span>
+0006 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0007 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%Code last revised in: February 2021</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%[data] is a structure with the following fields:</span>
+0012 <span class="comment">%name - a short name for each component</span>
+0013 <span class="comment">%TC - critical temperature (K)</span>
+0014 <span class="comment">%PC - critical pressure (MPa)</span>
+0015 <span class="comment">%ACENTRIC - acentric factor</span>
+0016 <span class="comment">%binary - Matrix of binary interaction parameters (NCxNC), where NC is the</span>
+0017 <span class="comment">%number of components in the database</span>
+0018 
+0019 <span class="comment">%Name of the components</span>
+0020 data.name=<span class="keyword">...</span>
+0021     {<span class="string">'C1'</span>,<span class="string">'C2'</span>,<span class="string">'C3'</span>,<span class="string">'IC4'</span>,<span class="string">'C4'</span><span class="keyword">...</span>
+0022     <span class="string">'IC5'</span>,<span class="string">'C5'</span>,<span class="string">'C6'</span>,<span class="string">'C7'</span>,<span class="string">'C8'</span><span class="keyword">...</span>
+0023     <span class="string">'C9'</span>,<span class="string">'H2O'</span>,<span class="string">'N2'</span>,<span class="string">'CO2'</span>,<span class="string">'H2S'</span>};
+0024 <span class="comment">%Critical Temperature (K)</span>
+0025 data.TC=[<span class="keyword">...</span>
+0026 190.6 305.4 369.8 408.1 425.2<span class="keyword">...</span>
+0027 460.4 469.6 507.4 540.2 568.8<span class="keyword">...</span>
+0028 594.6 647.3 126.2 304.2 373.2];
+0029 <span class="comment">%Critical Pressure (MPa)</span>
+0030 data.PC=[<span class="keyword">...</span>
+0031     4.599 4.8827 4.2445 3.6468 3.7988<span class="keyword">...</span>
+0032     3.3834 3.3733 2.9681 2.7351 2.4819<span class="keyword">...</span>
+0033     2.3096 22.0834 3.3936 7.3746 8.9374];
+0034 <span class="comment">%Acentric Factor</span>
+0035 data.ACENTRIC=[<span class="keyword">...</span>
+0036     0.008 0.098 0.152 0.176 0.193<span class="keyword">...</span>
+0037     0.227 0.251 0.296 0.351 0.394<span class="keyword">...</span>
+0038     0.440 0.344 0.040 0.225 0.100];
+0039 <span class="comment">%Binary Parameters</span>
+0040 NCD=length(data.PC);
+0041 data.binary=zeros(NCD,NCD);
+0042 data.binary(1,12:15)=[0.45 0.02 0.12 0.08];
+0043 data.binary(2,12:15)=[0.45 0.06 0.15 0.07];
+0044 data.binary(3,12:15)=[0.53 0.08 0.15 0.07];
+0045 data.binary(4,12:15)=[0.52 0.08 0.15 0.06];
+0046 data.binary(5,12:15)=[0.52 0.08 0.15 0.06];
+0047 data.binary(6,12:15)=[0.50 0.08 0.15 0.06];
+0048 data.binary(7,12:15)=[0.50 0.08 0.15 0.06];
+0049 data.binary(8,12:15)=[0.50 0.08 0.15 0.05];
+0050 data.binary(9,12:15)=[0.50 0.08 0.15 0.04];
+0051 data.binary(10,12:15)=[0.50 0.08 0.15 0.04];
+0052 data.binary(11,12:15)=[0.50 0.08 0.15 0.03];
+0053 data.binary(14,15)=0.12;
+0054 <span class="keyword">for</span> i=1:NCD-1
+0055     <span class="keyword">for</span> j=1:NCD
+0056         data.binary(j,i)=data.binary(i,j);
+0057     <span class="keyword">end</span>
+0058 <span class="keyword">end</span>
+0059 
+0060 <span class="keyword">end</span>
+0061</pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

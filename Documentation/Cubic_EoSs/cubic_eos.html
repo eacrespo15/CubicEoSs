@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cubic_eos</title>
+  <meta name="keywords" content="cubic_eos">
+  <meta name="description" content="Core function for the calculations using cEoSs">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>cubic_eos
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Core function for the calculations using cEoSs</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Core function for the calculations using cEoSs
+
+Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+
+Inputs:
+NC         - Number of components
+indexes    - Indexes of the system components in the database
+T          - Temperature (K)
+P          - Pressure(atm)
+zfeed      - Mixture's composition
+EoS        - Type of Cubic EoS (0-SRK || 1- Peng-Robinson)
+phasetype  - 1:Liquid || -1:Vapor || 0-Min. Gibbs Energy
+solvertype - 1:Mollerup || 2- Mollerups with roots sorting
+
+Outputs:
+phasefound- phase found by the EoS: If phase type= 1/-1 it returns 1 if the
+   requested phase was found and -1 otherwise. If phasetype=0 it returns 2 if a
+   liquid root was found or -2 if a vapor root was found!
+Zcalc - Compressibility factor 
+fug - Vector of ln(fugacity coefficients) (1xNC)
+fugT - T-derivatives of fug (1xNC)
+fugP - P-derivatives of fug (1xNC)
+fugX - Scaled composition derivatives of fug (NCxNC)
+AUX - Various residual properties Hres, Sres, Cpres,...</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="cubic_solver.html" class="code" title="function [Z,ZV2,dG] = cubic_solver(phasetype,A,B,delta1,delta2,solvertype)">cubic_solver</a>	This subroutine solves the cubic EoS for Z</li><li><a href="mixparam.html" class="code" title="function [Bmix,Amix,Amix_dT,Amix_dT2,Amix_dX,Amix_dXdT] = mixparam(zfeed,kij,bii,ai0,ai1,ai2)">mixparam</a>	This subroutines returns the A and B mixture parameters and the required</li><li><a href="set_temperature.html" class="code" title="function [AC0,AC1,AC2] = set_temperature(T,ALF,AC,m,nc)">set_temperature</a>	This funcion calculates the temperature dependent part of the EoS</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="fugacity_cubic.html" class="code" title="function [fug,rho] = fugacity_cubic(NC,T,P,zfeed,phasetype,solvertype,INITDATA)">fugacity_cubic</a>	Emanuel A. Crespo</li><li><a href="main.html" class="code" title="">main</a>	Main file for calculations with SRK/PR cubic EoSs</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc)</a>
+0002 <span class="comment">%Core function for the calculations using cEoSs</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%Emanuel A. Crespo</span>
+0005 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0006 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%Code last revised in: February 2021</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%Inputs:</span>
+0011 <span class="comment">%NC         - Number of components</span>
+0012 <span class="comment">%indexes    - Indexes of the system components in the database</span>
+0013 <span class="comment">%T          - Temperature (K)</span>
+0014 <span class="comment">%P          - Pressure(atm)</span>
+0015 <span class="comment">%zfeed      - Mixture's composition</span>
+0016 <span class="comment">%EoS        - Type of Cubic EoS (0-SRK || 1- Peng-Robinson)</span>
+0017 <span class="comment">%phasetype  - 1:Liquid || -1:Vapor || 0-Min. Gibbs Energy</span>
+0018 <span class="comment">%solvertype - 1:Mollerup || 2- Mollerups with roots sorting</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%Outputs:</span>
+0021 <span class="comment">%phasefound- phase found by the EoS: If phase type= 1/-1 it returns 1 if the</span>
+0022 <span class="comment">%   requested phase was found and -1 otherwise. If phasetype=0 it returns 2 if a</span>
+0023 <span class="comment">%   liquid root was found or -2 if a vapor root was found!</span>
+0024 <span class="comment">%Zcalc - Compressibility factor</span>
+0025 <span class="comment">%fug - Vector of ln(fugacity coefficients) (1xNC)</span>
+0026 <span class="comment">%fugT - T-derivatives of fug (1xNC)</span>
+0027 <span class="comment">%fugP - P-derivatives of fug (1xNC)</span>
+0028 <span class="comment">%fugX - Scaled composition derivatives of fug (NCxNC)</span>
+0029 <span class="comment">%AUX - Various residual properties Hres, Sres, Cpres,...</span>
+0030 
+0031 
+0032 <span class="comment">%Initialize the variable containing various properties</span>
+0033 AUX=zeros(1,10);
+0034 
+0035 <span class="comment">%Get T-dependent terms of the EoS</span>
+0036 [Ai0,Ai1,Ai2]=<a href="set_temperature.html" class="code" title="function [AC0,AC1,AC2] = set_temperature(T,ALF,AC,m,nc)">set_temperature</a>(T,SQTC,aci,mfunc,NC);
+0037 
+0038 <span class="comment">%Get mixture parameters A and B and their appropriate derivatives</span>
+0039 [Bmix,Amix,Amix_dT,Amix_dT2,Amix_dX,Amix_dXdT]=<a href="mixparam.html" class="code" title="function [Bmix,Amix,Amix_dT,Amix_dT2,Amix_dX,Amix_dXdT] = mixparam(zfeed,kij,bii,ai0,ai1,ai2)">mixparam</a>(zfeed,kij,bci,Ai0,Ai1,Ai2);
+0040 
+0041 <span class="comment">%Solve the Cubic EoS in terms of Compressibility factor</span>
+0042 TINV=1/T;
+0043 POVERT=P*TINV;
+0044 APT=Amix*POVERT;
+0045 BPT=Bmix*POVERT;
+0046 
+0047 [Z,ZV2,dG]=<a href="cubic_solver.html" class="code" title="function [Z,ZV2,dG] = cubic_solver(phasetype,A,B,delta1,delta2,solvertype)">cubic_solver</a>(phasetype,APT,BPT,delta1,delta2,solvertype);
+0048 
+0049 
+0050 <span class="comment">%Calculate the Volume</span>
+0051 PINV=1/P;
+0052 V=Z*T*PINV; <span class="comment">%This is V/R</span>
+0053 
+0054 <span class="comment">%It is worth to remember that the whole EoS was solved eliminating the gas constant</span>
+0055 
+0056 <span class="comment">%Return the appropriate phase found indicator</span>
+0057 phasefound=1;
+0058 <span class="keyword">if</span> (V&gt;=3*Bmix)
+0059     phasefound=-1;
+0060 <span class="keyword">end</span>
+0061 
+0062 <span class="keyword">if</span> phasetype ~=0
+0063     phasefound=phasefound*phasetype;
+0064 <span class="keyword">else</span>
+0065     phasefound=2*phasetype;
+0066 <span class="keyword">end</span>
+0067 
+0068 <span class="comment">%Auxiliary dummy values</span>
+0069 BINV=1/Bmix;
+0070 S1=1/(V+delta1*Bmix);
+0071 S2=1/(V+delta2*Bmix);
+0072 
+0073 <span class="comment">%Calculation of partial pressure derivatives</span>
+0074 <span class="comment">%P1=P*TINV+Amix*S1*S2;          %This is equivalent to 1/(V-b) of eq. 5</span>
+0075 P1=1/(V-Bmix);                  <span class="comment">%First term of eq.5</span>
+0076 PA=-S1*S2;                      <span class="comment">%d(P/T)/d(A/T)</span>
+0077 P2=Amix*PA;                     <span class="comment">%Equivalent to the second term of eq.5</span>
+0078 dummy1=delta1*S1+delta2*S2;     <span class="comment">%Useful value</span>
+0079 PB=P1*P1-dummy1*P2;             <span class="comment">%This is the derivative of P/T in order to Bmix</span>
+0080 PN=P1;
+0081 
+0082 <span class="comment">%Calculation of Helmholtz derivatives and useful dummy values</span>
+0083 F1=log(V*P1);                       <span class="comment">%(FN) eq. 75 Chapter 3</span>
+0084 dummy2=log(S1/S2)/(delta2-delta1);  <span class="comment">%(XL2)Useful value</span>
+0085 f=dummy2*BINV;                      <span class="comment">%(-FA)f from eq. 62</span>
+0086 F2=Amix*f;                          <span class="comment">%Second term from eq. 60</span>
+0087 FF=F1-F2;                           <span class="comment">%F function from eq. 60 - Helmholtz energy/RT</span>
+0088 dummy3=-V*PA;                       <span class="comment">%(GB) This is equal to 1/(delta1-delta2) * df2/db onde f2=ln(V+delta1*B)/(V+Delta2*B)</span>
+0089 F1B=P1;                             <span class="comment">%(FnB) Derivative of F1 in order to B;</span>
+0090 F2B=(Amix*dummy3-F2)*BINV;               <span class="comment">%Derivative of F2 in order to B;</span>
+0091 FB=F1B-F2B;                         <span class="comment">%Derivative of F in order to B</span>
+0092 fB=F2B/Amix;                        <span class="comment">%(-FAB) Derivative of f in order to B</span>
+0093 dummy4=-dummy3*dummy1;              <span class="comment">%(GBB) Necessary to calculate FBB</span>
+0094 F2BB=(Amix*dummy4-2*F2B)*BINV;      <span class="comment">%Derivative of F2B in order to B;</span>
+0095 F1BB=P1*P1;                         <span class="comment">%eq.97</span>
+0096 FBB=F1BB-F2BB;                      <span class="comment">%Second-order derivative of F in order to B</span>
+0097 
+0098 
+0099 <span class="comment">%Calculation of residual Entropy, Enthalpy, and Gibbs Energy</span>
+0100 dummy5=log(Z);
+0101 dFdT=-f*Amix_dT;
+0102 SR=-T*dFdT-FF+dummy5; <span class="comment">%This is the value of Sres/R</span>
+0103 HR=T*(-T*dFdT+Z-1);   <span class="comment">%This is the value of Hres/R</span>
+0104 GR=HR-T*SR;           <span class="comment">%This is the value of Gres/R</span>
+0105 
+0106 <span class="comment">%Calculation of useful derivatives of F or P</span>
+0107 DPDV=-P1*P1-P2*(S1+S2); <span class="comment">%dP/dV (or more precisely d(P/T)/d(V/R))</span>
+0108 DPDT=T*PA*Amix_dT+P/T;      <span class="comment">%Note that d2F_dTdV=-PA*Amix_dT</span>
+0109 DVDT=-DPDT/DPDV*TINV;   <span class="comment">%d(V/R)/dT</span>
+0110 d2FdT2=-f*Amix_dT2;     
+0111 
+0112 CVR=-T*(T*d2FdT2+2*dFdT); <span class="comment">%Cv/R</span>
+0113 CPR=CVR-DPDT*DPDT/DPDV-1; <span class="comment">%Cp/R</span>
+0114 dHdP=V-T*DVDT;            <span class="comment">%dH/dP</span>
+0115 dSdP=-DVDT+PINV;          <span class="comment">%Why is 1/P added here?</span>
+0116 
+0117 
+0118 <span class="comment">%Calculation of ln(fugcoef)</span>
+0119 FNP=F1-dummy5;
+0120 fug=FNP+FB*bci-f*Amix_dX;
+0121 
+0122 <span class="comment">%Calculation of T and P derivatives of ln(fugcoef)</span>
+0123 dPdX=PN+PB*bci+PA*Amix_dX; <span class="comment">%The dPdX value is divided by T</span>
+0124 dVdX=-dPdX/DPDV;           <span class="comment">%Because DPDV is d(P/T)... This is Vi/R</span>
+0125 fugP=dVdX*TINV-PINV;       
+0126 d2FdTdX=-fB*bci*Amix_dT-f*Amix_dXdT;
+0127 fugT=d2FdTdX+TINV-DPDT*TINV*dVdX;
+0128 
+0129 <span class="comment">%Calculation of Compositional derivatives of ln(fugcoef)</span>
+0130 fugX=zeros(NC,NC);
+0131 <span class="keyword">for</span> i=1:NC
+0132     <span class="keyword">for</span> j=1:NC
+0133         T1=F1B*(bci(i)+bci(j));
+0134         T2=-fB*(bci(i)*Amix_dX(j)+bci(j)*Amix_dX(i));
+0135         T3=0; <span class="comment">%If the expression for B is modified this has to be modified</span>
+0136         T4=FBB*bci(i)*bci(j);
+0137         T5=-2*f*Ai0(i)*Ai0(j)*kij(i,j);
+0138         d2FdX2=T1+T2+T3+T4+T5;
+0139         T6=dPdX(i)*dPdX(j)/DPDV;
+0140         fugX(i,j)=d2FdX2+1+T6;
+0141     <span class="keyword">end</span>
+0142 <span class="keyword">end</span>
+0143 
+0144 
+0145 <span class="comment">%Store auxiliary properties</span>
+0146 AUX(1)=ZV2;
+0147 AUX(2)=dG;
+0148 AUX(3)=HR;
+0149 AUX(4)=SR;
+0150 AUX(5)=CPR;
+0151 AUX(6)=dSdP;
+0152 AUX(7)=dHdP;
+0153 AUX(8)=DPDV*T;
+0154 AUX(9)=DVDT;
+0155 AUX(10)=DPDV;
+0156 <span class="keyword">end</span>
+0157</pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

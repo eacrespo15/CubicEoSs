@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of set_temperature</title>
+  <meta name="keywords" content="set_temperature">
+  <meta name="description" content="This funcion calculates the temperature dependent part of the EoS">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>set_temperature
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This funcion calculates the temperature dependent part of the EoS</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [AC0,AC1,AC2] = set_temperature(T,ALF,AC,m,nc) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This funcion calculates the temperature dependent part of the EoS
+pure-component parameters, namely sqrt(A/RT) but as we eliminated the R
+constant AC0 represents sqrt(~A/T).
+
+Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+
+Inputs:
+T          - Temperature (K)
+ALF        - 1/sqrt(Tc)                        (1xNC)
+AC         - Vector of ac(i) values            (1*NC)
+m          - m function for each component     (1xNC)
+nc         - Number of components
+
+Outputs:
+AC0= sqrt(A/T)
+AC1= d(AC0)/dT
+AC2= d2(AC0)/dT2</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="cubic_eos.html" class="code" title="function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc)">cubic_eos</a>	Core function for the calculations using cEoSs</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [AC0,AC1,AC2] = set_temperature(T,ALF,AC,m,nc)</a>
+0002 <span class="comment">%This funcion calculates the temperature dependent part of the EoS</span>
+0003 <span class="comment">%pure-component parameters, namely sqrt(A/RT) but as we eliminated the R</span>
+0004 <span class="comment">%constant AC0 represents sqrt(~A/T).</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%Emanuel A. Crespo</span>
+0007 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0008 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%Code last revised in: February 2021</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%Inputs:</span>
+0013 <span class="comment">%T          - Temperature (K)</span>
+0014 <span class="comment">%ALF        - 1/sqrt(Tc)                        (1xNC)</span>
+0015 <span class="comment">%AC         - Vector of ac(i) values            (1*NC)</span>
+0016 <span class="comment">%m          - m function for each component     (1xNC)</span>
+0017 <span class="comment">%nc         - Number of components</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%Outputs:</span>
+0020 <span class="comment">%AC0= sqrt(A/T)</span>
+0021 <span class="comment">%AC1= d(AC0)/dT</span>
+0022 <span class="comment">%AC2= d2(AC0)/dT2</span>
+0023 
+0024 <span class="comment">%Initialize the output variables</span>
+0025 AC0=zeros(1,nc);
+0026 AC1=zeros(1,nc);
+0027 AC2=zeros(1,nc);
+0028 
+0029 <span class="comment">%Useful dummy variables</span>
+0030 SQTR=1/sqrt(T);
+0031 T2R=0.5/T;
+0032 T2RF=-3*T2R;
+0033 
+0034 <span class="comment">%Calculation of the output variables</span>
+0035 <span class="keyword">for</span> i=1:nc
+0036     Q1=AC(i)*(1+m(i))*SQTR;
+0037     AC0(i)=Q1-AC(i)*m(i)*ALF(i);
+0038     AC1(i)=-Q1*T2R;
+0039     AC2(i)=T2RF*AC1(i);
+0040 <span class="keyword">end</span>
+0041 <span class="keyword">end</span>
+0042</pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

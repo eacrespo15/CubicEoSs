@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mixparam</title>
+  <meta name="keywords" content="mixparam">
+  <meta name="description" content="This subroutines returns the A and B mixture parameters and the required">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>mixparam
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This subroutines returns the A and B mixture parameters and the required</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [Bmix,Amix,Amix_dT,Amix_dT2,Amix_dX,Amix_dXdT] = mixparam(zfeed,kij,bii,ai0,ai1,ai2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This subroutines returns the A and B mixture parameters and the required
+composition and temperature derivatives
+
+Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+
+Inputs:
+zfeed - Systems composition (1xNC)
+kij - Matrix of binary interaction parameters in the form of (1-kij)
+bii - bii values for every component (1xNC) 
+ai0, ai1, ai2 - Parameter aii and its T-derivatives (1xNC)
+Outputs:
+Parameters of the mixture, temperature and compositional derivatives</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="cubic_eos.html" class="code" title="function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc)">cubic_eos</a>	Core function for the calculations using cEoSs</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Bmix,Amix,Amix_dT,Amix_dT2,Amix_dX,Amix_dXdT] = mixparam(zfeed,kij,bii,ai0,ai1,ai2)</a>
+0002 <span class="comment">%This subroutines returns the A and B mixture parameters and the required</span>
+0003 <span class="comment">%composition and temperature derivatives</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%Emanuel A. Crespo</span>
+0006 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0007 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%Code last revised in: February 2021</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%Inputs:</span>
+0012 <span class="comment">%zfeed - Systems composition (1xNC)</span>
+0013 <span class="comment">%kij - Matrix of binary interaction parameters in the form of (1-kij)</span>
+0014 <span class="comment">%bii - bii values for every component (1xNC)</span>
+0015 <span class="comment">%ai0, ai1, ai2 - Parameter aii and its T-derivatives (1xNC)</span>
+0016 <span class="comment">%Outputs:</span>
+0017 <span class="comment">%Parameters of the mixture, temperature and compositional derivatives</span>
+0018 
+0019 <span class="comment">%Calculate the B mixture parameter</span>
+0020 Bmix=zfeed*bii';
+0021 
+0022 <span class="comment">%Calculate the A mixture parameter</span>
+0023 AX0=zfeed.*ai0;
+0024 AH0=AX0*kij;
+0025 AD1=ai0.*AH0;
+0026 Amix=zfeed*AD1';
+0027 
+0028 <span class="comment">%Calculate dA/dX</span>
+0029 Amix_dX=2*AD1;
+0030 
+0031 <span class="comment">%Calculate derivatives if required</span>
+0032 AX1=zfeed.*ai1;
+0033 AH1=AX1*kij;
+0034 Amix_dXdT=2*(ai0.*AH1+ai1.*AH0);
+0035 Amix_dT=0.5*(Amix_dXdT*zfeed');
+0036 dummydt=(ai2.*AH0+ai1.*AH1);
+0037 Amix_dT2=2*(dummydt*zfeed');
+0038 
+0039</pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

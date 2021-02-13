@@ -1,0 +1,23 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  cubic_eos -> cubic_solver;
+  cubic_eos -> mixparam;
+  cubic_eos -> set_temperature;
+  fugacity_cubic -> cubic_eos;
+  init_cubic -> get_binary;
+  init_cubic -> get_eos_constants;
+  init_cubic -> get_module_database;
+  main -> cubic_eos;
+  main -> init_cubic;
+
+  cubic_eos [URL="cubic_eos.html"];
+  cubic_solver [URL="cubic_solver.html"];
+  fugacity_cubic [URL="fugacity_cubic.html"];
+  get_binary [URL="get_binary.html"];
+  get_eos_constants [URL="get_eos_constants.html"];
+  get_module_database [URL="get_module_database.html"];
+  init_cubic [URL="init_cubic.html"];
+  main [URL="main.html"];
+  mixparam [URL="mixparam.html"];
+  set_temperature [URL="set_temperature.html"];
+}

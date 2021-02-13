@@ -1,0 +1,297 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cubic_solver</title>
+  <meta name="keywords" content="cubic_solver">
+  <meta name="description" content="This subroutine solves the cubic EoS for Z">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html Cubic_EoSs -->
+<h1>cubic_solver
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This subroutine solves the cubic EoS for Z</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [Z,ZV2,dG] = cubic_solver(phasetype,A,B,delta1,delta2,solvertype) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This subroutine solves the cubic EoS for Z
+Searches for multiple roots
+
+Emanuel A. Crespo
+PhD in Chemical Engineering: 2017-2021
+University of Aveiro/CICECO Aveiro Institute of Materials
+
+Code last revised in: February 2021
+
+References: 1- https://www.e-education.psu.edu/png520/m11_p6.html
+2- Michelsens and Mollerups book
+3- Claudio Olivera-Fuentes, &quot;The Optimal Solution of Cubic Equations of
+State&quot;, Latin American Applied Research, 23:243-256 (1993)
+
+Inputs:
+phasetype: 1:Liquid || -1: Vapor || 0: Min. Gibbs Energy
+A: AmixP/T
+B: BmixP/T
+delta1 and delta2: Parameters from the cubic EoS
+solvertype:    1-Mollerup's method
+               2-Mollerup's method with root order and selection</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="cubic_eos.html" class="code" title="function [phasefound,Z,fug,fugT,fugP,fugX,AUX] = cubic_eos(NC,T,P,zfeed,phasetype,solvertype,SQTC,kij,delta1,delta2,bci,aci,mfunc)">cubic_eos</a>	Core function for the calculations using cEoSs</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [Z,ZV2,dG] = cubic_solver1(phasetype,A,B,delta1,delta2,toldz,tolqz)</a></li><li><a href="#_sub2" class="code">function [Z,ZV2,dG] = cubic_solver2(phasetype,A,B,delta1,delta2,toldz,tolqz)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Z,ZV2,dG] = cubic_solver(phasetype,A,B,delta1,delta2,solvertype)</a>
+0002 <span class="comment">%This subroutine solves the cubic EoS for Z</span>
+0003 <span class="comment">%Searches for multiple roots</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%Emanuel A. Crespo</span>
+0006 <span class="comment">%PhD in Chemical Engineering: 2017-2021</span>
+0007 <span class="comment">%University of Aveiro/CICECO Aveiro Institute of Materials</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%Code last revised in: February 2021</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%References: 1- https://www.e-education.psu.edu/png520/m11_p6.html</span>
+0012 <span class="comment">%2- Michelsens and Mollerups book</span>
+0013 <span class="comment">%3- Claudio Olivera-Fuentes, &quot;The Optimal Solution of Cubic Equations of</span>
+0014 <span class="comment">%State&quot;, Latin American Applied Research, 23:243-256 (1993)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%Inputs:</span>
+0017 <span class="comment">%phasetype: 1:Liquid || -1: Vapor || 0: Min. Gibbs Energy</span>
+0018 <span class="comment">%A: AmixP/T</span>
+0019 <span class="comment">%B: BmixP/T</span>
+0020 <span class="comment">%delta1 and delta2: Parameters from the cubic EoS</span>
+0021 <span class="comment">%solvertype:    1-Mollerup's method</span>
+0022 <span class="comment">%               2-Mollerup's method with root order and selection</span>
+0023 
+0024 toldz=1E-7; <span class="comment">%Tolerance for deltaZ</span>
+0025 tolqz=1E-7; <span class="comment">%Tolerance for the Q Function</span>
+0026 <span class="keyword">if</span> solvertype==1
+0027     [Z,ZV2,dG]=<a href="#_sub1" class="code" title="subfunction [Z,ZV2,dG] = cubic_solver1(phasetype,A,B,delta1,delta2,toldz,tolqz)">cubic_solver1</a>(phasetype,A,B,delta1,delta2,toldz,tolqz);
+0028 <span class="keyword">elseif</span> solvertype==2
+0029     [Z,ZV2,dG]=<a href="#_sub2" class="code" title="subfunction [Z,ZV2,dG] = cubic_solver2(phasetype,A,B,delta1,delta2,toldz,tolqz)">cubic_solver2</a>(phasetype,A,B,delta1,delta2,toldz,tolqz);
+0030 <span class="keyword">else</span>
+0031     error(<span class="string">'Invalid solver type selected for Cubic EoS'</span>);
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="keyword">end</span>
+0035     
+0036 <a name="_sub1" href="#_subfunctions" class="code">function [Z,ZV2,dG] = cubic_solver1(phasetype,A,B,delta1,delta2,toldz,tolqz)</a>
+0037 <span class="comment">%This subroutine solves the cubic EoS for Z by the Mollerup's method</span>
+0038 <span class="comment">%Searches for multiple roots</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%References: 1- https://www.e-education.psu.edu/png520/m11_p6.html</span>
+0041 <span class="comment">%2- Michelsens and Mollerups book</span>
+0042 <span class="comment">%3- Claudio Olivera-Fuentes, &quot;The Optimal Solution of Cubic Equations of</span>
+0043 <span class="comment">%State&quot;, Latin American Applied Research, 23:243-256 (1993)</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">%Inputs:</span>
+0046 <span class="comment">%phasetype: 1:Liquid || -1: Vapor || 0: Min. Gibbs Energy</span>
+0047 <span class="comment">%A: AmixP/T</span>
+0048 <span class="comment">%B: BmixP/T</span>
+0049 <span class="comment">%delta1 and delta2: Parameters from the cubic EoS</span>
+0050 
+0051 <span class="comment">%Initialize output variables</span>
+0052 ZV2=0;
+0053 dG=0;
+0054 
+0055 <span class="comment">%Terms from the cubic polynomial in Z</span>
+0056 dummy1=delta1+delta2;
+0057 dummy2=delta1*delta2;
+0058 dummy3=B*B;
+0059 
+0060 d2=B*(dummy1-1)-1;
+0061 d1=A-B*dummy1+dummy3*(dummy2-dummy1);
+0062 d0=-(A*B+(dummy3+B*dummy3)*dummy2);
+0063 
+0064 <span class="comment">%Initial guess for Z</span>
+0065 <span class="keyword">if</span> phasetype==1
+0066     Z=B; <span class="comment">%which in reality is bP/RT</span>
+0067 <span class="keyword">elseif</span> phasetype==-1
+0068     Z=1; <span class="comment">%vapour-like estimate</span>
+0069 <span class="keyword">else</span>
+0070     Z=-d2/3;
+0071     Q=Z*((Z+d2)*Z+d1)+d0; <span class="comment">%Q is the cubic EoS written in the form of a polynomial for Z</span>
+0072     Z=B;
+0073     <span class="keyword">if</span> Q&lt;0
+0074         Z=Z+1;
+0075     <span class="keyword">end</span>
+0076 <span class="keyword">end</span>
+0077 
+0078 <span class="comment">%Setting up Third order Newton for Cubic EoS to converge first root</span>
+0079 deltaZ=1;
+0080 Q=1;
+0081 <span class="keyword">while</span> abs(deltaZ)&gt;toldz &amp;&amp; abs(Q)&gt;tolqz
+0082     DQ2=3*Z+d2;                         <span class="comment">%Note that the q''(z) is divided by two here to simplify later</span>
+0083     DQ1=Z*(DQ2+d2)+d1;                  <span class="comment">%q'(z) is calculated here using the q''/2</span>
+0084     Q=Z*((Z+d2)*Z+d1)+d0;               <span class="comment">%q(z)</span>
+0085     IDQ1=1/DQ1;                         <span class="comment">%1/q'(z)</span>
+0086     dummy4=Q*IDQ1;                      <span class="comment">%q(z)/q'(z)</span>
+0087     deltaZ=dummy4*(1+DQ2*IDQ1*dummy4);  <span class="comment">%This is delta but is lacking the minus sign</span>
+0088     Z=Z-deltaZ;                         <span class="comment">%Because the minus was missing above here we do Z=Z-deltaZ</span>
+0089 <span class="keyword">end</span>
+0090 
+0091 <span class="comment">%Factorize the polynomial by knowing the first root x1</span>
+0092 <span class="comment">%So q(Z) may be rewritten as q(Z)=(Z-x1)(Z^2+F*Z+G)=0</span>
+0093 F=Z+d2;
+0094 G=Z*F+d1;
+0095 D=F*F-4*G; <span class="comment">%Expression inside the sqrt of quadratic expression</span>
+0096 
+0097 <span class="keyword">if</span> D&gt;=0 <span class="comment">%If D &lt; 0 there are no more real roots of the polynomial</span>
+0098     Z1=0.5*(abs(F)+sqrt(D));
+0099     <span class="keyword">if</span> F&gt;0
+0100         Z1=-Z1;
+0101     <span class="keyword">end</span>
+0102     <span class="keyword">if</span> Z&gt;Z1
+0103         Z1=G/Z1;
+0104     <span class="keyword">end</span>
+0105     
+0106     <span class="comment">%Refinement of solution by a single Newton Step</span>
+0107     DQ2=3*Z1+d2;                            <span class="comment">%Note that the q''(z) is divided by two here to simplify later</span>
+0108     DQ1=Z1*(DQ2+d2)+d1;                     <span class="comment">%q'(z) is calculated here using the q''/2</span>
+0109     Q=Z1*((Z1+d2)*Z1+d1)+d0;                <span class="comment">%q(z)</span>
+0110     IDQ1=1/DQ1;                             <span class="comment">%1/q'(z)</span>
+0111     dummy5=Q*IDQ1;                          <span class="comment">%q(z)/q'(z)</span>
+0112     deltaZ1=dummy5*(1+DQ2*IDQ1*dummy5);     <span class="comment">%This is delta but is lacking the minus sign</span>
+0113     Z1=Z1-deltaZ1;                          <span class="comment">%Because the minus was missing above here we do Z=Z-deltaZ</span>
+0114     
+0115     <span class="keyword">if</span> Z1&gt;=B
+0116         <span class="keyword">if</span> phasetype==0
+0117             <span class="comment">%Calculate Excess Gibbs Energy Difference For Multiple Solutions</span>
+0118             d1B=delta1*B;
+0119             d2B=delta2*B;
+0120             F=log((Z-B)/(Z1-B))+A/(B*(delta2-delta1))*log((Z+d2B)*(Z1+d1B)/(Z+d1B)/(Z1+d2B));
+0121             dG=abs(F);
+0122             ZV2=Z1;
+0123             <span class="keyword">if</span> F&lt;0       <span class="comment">%Expression for Excess Gibbs Energy Difference (search for it)</span>
+0124                 ZV2=Z;
+0125                 Z=Z1;
+0126             <span class="keyword">end</span>
+0127         <span class="keyword">elseif</span> phasetype==1 <span class="comment">%If we want the liquid phase we store in Z the root with lower Z</span>
+0128             <span class="keyword">if</span> Z1&lt;Z
+0129                 Z=Z1;
+0130             <span class="keyword">end</span>
+0131         <span class="keyword">else</span>
+0132             <span class="keyword">if</span> Z1&gt;Z
+0133                 Z=Z1;       <span class="comment">%If we want the vapor phase we store in Z the root with higher Z</span>
+0134             <span class="keyword">end</span>
+0135         <span class="keyword">end</span>
+0136     <span class="keyword">end</span>
+0137 <span class="keyword">end</span>   
+0138 <span class="keyword">end</span>
+0139 
+0140 <a name="_sub2" href="#_subfunctions" class="code">function [Z,ZV2,dG] = cubic_solver2(phasetype,A,B,delta1,delta2,toldz,tolqz)</a>
+0141 <span class="comment">%This subroutine solves the cubic EoS for Z by the Mollerup's method</span>
+0142 <span class="comment">%Searches for multiple roots</span>
+0143 <span class="comment">%</span>
+0144 <span class="comment">%References: 1- https://www.e-education.psu.edu/png520/m11_p6.html</span>
+0145 <span class="comment">%2- Michelsens and Mollerups book</span>
+0146 <span class="comment">%3- Claudio Olivera-Fuentes, &quot;The Optimal Solution of Cubic Equations of</span>
+0147 <span class="comment">%State&quot;, Latin American Applied Research, 23:243-256 (1993)</span>
+0148 <span class="comment">%</span>
+0149 <span class="comment">%Inputs:</span>
+0150 <span class="comment">%phasetype: 1:Liquid || -1: Vapor || 0: Min. Gibbs Energy</span>
+0151 <span class="comment">%A: AmixP/T</span>
+0152 <span class="comment">%B: BmixP/T</span>
+0153 <span class="comment">%delta1 and delta2: Parameters from the cubic EoS</span>
+0154 
+0155 <span class="comment">%Initialize output variables</span>
+0156 ZV2=0;
+0157 dG=0;
+0158 
+0159 <span class="comment">%Terms from the cubic polynomial in Z</span>
+0160 dummy1=delta1+delta2;
+0161 dummy2=delta1*delta2;
+0162 dummy3=B*B;
+0163 
+0164 d2=B*(dummy1-1)-1;
+0165 d1=A-B*dummy1+dummy3*(dummy2-dummy1);
+0166 d0=-(A*B+(dummy3+B*dummy3)*dummy2);
+0167 
+0168 <span class="comment">%Initial guess for Z</span>
+0169 <span class="keyword">if</span> phasetype==1
+0170     Z=B; <span class="comment">%which in reality is bP/RT</span>
+0171 <span class="keyword">elseif</span> phasetype==-1
+0172     Z=1; <span class="comment">%vapour-like estimate</span>
+0173 <span class="keyword">else</span>
+0174     Z=-d2/3;
+0175     Q=Z*((Z+d2)*Z+d1)+d0; <span class="comment">%Q is the cubic EoS written in the form of a polynomial for Z</span>
+0176     Z=B;
+0177     <span class="keyword">if</span> Q&lt;0
+0178         Z=Z+1;
+0179     <span class="keyword">end</span>
+0180 <span class="keyword">end</span>
+0181 
+0182 <span class="comment">%Setting up Third order Newton for Cubic EoS to converge first root</span>
+0183 deltaZ=1;
+0184 <span class="keyword">while</span> abs(deltaZ)&gt;toldz &amp;&amp; abs(Q)&gt;tolqz
+0185     DQ2=3*Z+d2;             <span class="comment">%Note that the q''(z) is divided by two here to simplify later</span>
+0186     DQ1=Z*(DQ2+d2)+d1;      <span class="comment">%q'(z) is calculated here using the q''/2</span>
+0187     Q=Z*((Z+d2)*Z+d1)+d0;   <span class="comment">%q(z)</span>
+0188     IDQ1=1/DQ1;             <span class="comment">%1/q'(z)</span>
+0189     dummy4=Q*IDQ1;          <span class="comment">%q(z)/q'(z)</span>
+0190     deltaZ=dummy4*(1+DQ2*IDQ1*dummy4); <span class="comment">%This is delta but is lacking the minus sign</span>
+0191     Z=Z-deltaZ;             <span class="comment">%Because the minus was missing above here we do Z=Z-deltaZ</span>
+0192 <span class="keyword">end</span>
+0193 
+0194 <span class="comment">%Factorize the polynomial by knowing the first root x1</span>
+0195 <span class="comment">%So q(Z) may be rewritten as q(Z)=(Z-x1)(Z^2+F*Z+G)=0</span>
+0196 F=Z+d2;
+0197 G=Z*F+d1;
+0198 D=F*F-4*G; <span class="comment">%Expression inside the sqrt of quadratic expression</span>
+0199 
+0200 <span class="comment">%Calculate the other two roots if existing</span>
+0201 <span class="keyword">if</span> D&gt;=0
+0202     Z2=(-F+sqrt(D))/2;
+0203     Z3=(-F-sqrt(D))/2;
+0204     raizes=[Z,Z2,Z3];
+0205     raizes=raizes(raizes&gt;0);
+0206     raizes=sort(raizes);
+0207     <span class="keyword">if</span> phasetype==0
+0208         <span class="comment">%Calculate Excess Gibbs Energy Difference For Multiple Solutions</span>
+0209         d1B=delta1*B;
+0210         d2B=delta2*B;
+0211         F=log((raizes(1)-B)/(raizes(end)-B))+A/(B*(delta2-delta1))*log((raizes(1)+d2B)*(raizes(end)+d1B)/(raizes(1)+d1B)/(raizes(end)+d2B));
+0212         dG=abs(F);
+0213         ZV2=raizes(end);
+0214         <span class="keyword">if</span> F&lt;0       <span class="comment">%Expression for Excess Gibbs Energy Difference (search for it)</span>
+0215             ZV2=Z;
+0216             Z=raizes(end);
+0217         <span class="keyword">end</span>
+0218     <span class="keyword">elseif</span> phasetype==1 <span class="comment">%If we want the liquid phase we store in Z the root with lower Z</span>
+0219         <span class="keyword">if</span> raizes(end)&lt;Z
+0220             Z=raizes(end);
+0221         <span class="keyword">end</span>
+0222     <span class="keyword">else</span>
+0223         <span class="keyword">if</span> raizes(end)&gt;Z
+0224             Z=raizes(end);       <span class="comment">%If we want the vapor phase we store in Z the root with higher Z</span>
+0225         <span class="keyword">end</span>
+0226     <span class="keyword">end</span>
+0227     
+0228 <span class="keyword">end</span>
+0229 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 12-Feb-2021 17:38:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
